@@ -8,8 +8,11 @@ export class Carta{
   }
 
   public dibujarCarta() {
-    return `<div key="${this.key}" class="${this.flip || this.match ? "bg-white" : "hover:bg-cyan-600 cursor-pointer"}
-     aspect-square flex items-center justify-center rounded-lg text-3xl transition-all duration-300 transform bg-cyan-500 select-none" onClick="rotarCarta(${this.key})">${this.flip || this.match ? this.numero : ""}</div>`;
+    return `<div key="${this.key}" 
+    class="
+    ${this.flip || this.match ? "bg-white" : "hover:bg-cyan-600 cursor-pointer rotate-y-180"}
+    ${this.match ? "ring-2 ring-cyan-500" : ""}
+    aspect-square flex items-center justify-center rounded-lg text-3xl transition duration-300 transform bg-cyan-500 select-none" onClick="rotarCarta(${this.key})"> ${this.flip || this.match ? this.numero : ""} </div>`;
   }
 
 

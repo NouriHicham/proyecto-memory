@@ -27,6 +27,7 @@ export class Memoria {
 
     //evitar que se giren las cartas si hay dos giradas
     if (this.flippedCards.length === 2 || this.isChecking) {
+      this.clicks--; // no sumar clicks si hay dos cartas giradas
       return;
     }
 

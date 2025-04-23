@@ -17,7 +17,7 @@ export default function Home() {
       memoria.rotarCarta(key);
       setClicks(memoria.clicks);
     };
-  }, []);
+  }, [memoria]);
 
   //tienes 20 segundos para terminar el juego
   useEffect(() => {

@@ -5,6 +5,8 @@ export class Memoria {
   private flippedCards: Carta[] = [];
   private isChecking: boolean = false;
   public clicks: number = 0;
+  public matches: number = 0; // debe llegar a 8
+  public win: boolean = false;
   constructor() {
     [0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7].forEach((item, key) => this.memoria.push(new Carta(item, key)));
   }
@@ -33,6 +35,7 @@ export class Memoria {
 
     if (carta && !carta.flip && !carta.match) {
       carta.flip = true;
+      carta.clicks++;
       this.flippedCards.push(carta);
 
       if(this.flippedCards.length === 2) {
@@ -46,12 +49,19 @@ export class Memoria {
   private checkMatch() {
     const [carta1, carta2] = this.flippedCards;
 
-    //bloque interaccion hasta que se verifique
+    //bloquea interaccion hasta que se verifique
     this.isChecking = true;
     if (carta1.numero === carta2.numero) {
       carta1.match = true;
       carta2.match = true;
+      this.matches++;
       this.isChecking = false;
+
+      //verificar si todas las cartas estan volteadas
+      if (this.matches === 8) {
+        this.win = true;
+      }
+      
     }else{
       setTimeout(() => {
         carta1.flip = false;

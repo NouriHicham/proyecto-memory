@@ -1,6 +1,7 @@
 export class Carta{
   public flip: boolean = false;
   public match: boolean = false;
+  public clicks: number = 0;
 
   constructor(public numero: number, public key: number) {
     this.numero = numero
@@ -12,7 +13,14 @@ export class Carta{
     class="
     ${this.flip || this.match ? "bg-white" : "hover:bg-cyan-600 cursor-pointer rotate-y-180"}
     ${this.match ? "ring-2 ring-cyan-500" : ""}
-    aspect-square flex items-center justify-center rounded-lg text-3xl transition duration-300 transform bg-cyan-500 select-none" onClick="rotarCarta(${this.key})"> ${this.flip || this.match ? this.numero : ""} </div>`;
+    aspect-square flex items-center justify-center rounded-lg text-3xl transition duration-300 transform bg-cyan-500 select-none" 
+    
+    onClick="rotarCarta(${this.key})">
+      <span>${this.flip || this.match ? this.numero : ""}</span> 
+      <span class="absolute bottom-1 right-2 text-xs font-medium text-blue-800 bg-cyan-100 px-1 rounded">
+        ${this.flip || this.match ? this.clicks : ""}
+      </span>
+    </div>`;
   }
 
 

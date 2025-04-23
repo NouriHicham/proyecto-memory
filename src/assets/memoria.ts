@@ -61,7 +61,7 @@ export class Memoria {
       if (this.matches === 8) {
         this.win = true;
       }
-      
+
     }else{
       setTimeout(() => {
         carta1.flip = false;

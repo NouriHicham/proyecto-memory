@@ -11,7 +11,7 @@ declare global {
 }
 
 export default function Juego() {
-  const [memoria, serMemoria] = useState(new Memoria());
+  const [memoria] = useState(new Memoria());
   const [clicks, setClicks] = useState(0);
   const [tiempoAgotado, setTiempoAgotado] = useState(false);
   const [win, setWin] = useState(false);

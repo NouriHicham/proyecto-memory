@@ -6,7 +6,7 @@ export class Memoria {
   private isChecking: boolean = false;
   public clicks: number = 0;
   public matches: number = 0; // debe llegar a 8
-  public win: boolean = false;
+  private tiempoAgotado: boolean = false;
 
   private imagenes: string[] = [
     "/img/0.png",
@@ -34,8 +34,9 @@ export class Memoria {
   }
 
   public rotarCarta(key: number) {
-    const carta = this.memoria.find((item) => item.key === key);
+    if (this.tiempoAgotado) return;
 
+    const carta = this.memoria.find((item) => item.key === key);
     this.clicks++;
 
     //evitar que se giren las cartas si hay dos giradas
@@ -68,11 +69,6 @@ export class Memoria {
       this.matches++;
       this.isChecking = false;
 
-      //verificar si todas las cartas estan volteadas
-      if (this.matches === 8) {
-        this.win = true;
-      }
-
     }else{
       setTimeout(() => {
         carta1.flip = false;
@@ -84,4 +80,13 @@ export class Memoria {
 
     this.flippedCards = [];
   }
+
+  public getMatches() {
+    return this.matches;
+  }
+
+  public setTiempoAgotado(tiempoAgotado: boolean) {
+    this.tiempoAgotado = tiempoAgotado;
+  }
+  
 }

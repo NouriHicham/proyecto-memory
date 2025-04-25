@@ -11,11 +11,11 @@ declare global {
 }
 
 export default function Juego() {
-  const memoria = new Memoria();
+  const [memoria, serMemoria] = useState(new Memoria());
   const [clicks, setClicks] = useState(0);
   const [tiempoAgotado, setTiempoAgotado] = useState(false);
   const [win, setWin] = useState(false);
-  const [contador, setContador] = useState(60);
+  const [contador, setContador] = useState(40);
 
   useEffect(
     () => {
@@ -23,30 +23,36 @@ export default function Juego() {
       memoria.dibujaMemoria("memoria-container");
 
       window.rotarCarta = (key: number) => {
-        memoria.rotarCarta(key);
-        setClicks(memoria.clicks);
+          memoria.rotarCarta(key);
+          setClicks(memoria.clicks);     
       };
+      
     },
-    [
-      /* memoria */
-    ]
+    [/* memoria */]
   ); // eslint-disable-line react-hooks/exhaustive-deps
 
   //tienes 20 segundos para terminar el juego
   useEffect(() => {
     const intervalId = setInterval(() => {
-      if (!memoria.win) {
-        setContador(contador - 1);
-        if (contador === 0) {
+      
+      if (contador <= 0 || memoria.getMatches() === 8) {
+        if(memoria.getMatches() !== 8){
           setTiempoAgotado(true);
+          memoria.setTiempoAgotado(true);
         }
       }else{
-        setWin(true)
+        setContador(contador - 1);
       }
 
+      console.log(memoria.getMatches());
+      if (memoria.getMatches() === 8) {
+        setWin(true);
+        clearInterval(intervalId);
+      }
     }, 1000);
+
     return () => clearInterval(intervalId);
-  }, [memoria.win, contador]);
+  }, [contador]);
 
   return (
     <>
@@ -57,7 +63,7 @@ export default function Juego() {
         <div
           id="memoria-container"
           className={`grid grid-cols-4 gap-2 w-[500px] ${
-            tiempoAgotado ? "text-red-500 text-2xl" : ""
+            tiempoAgotado ? "text-red-500 text-2xl pointer-events-none" : (win ? "text-green-500 text-2xl" : "")
           }`}
         >
           {tiempoAgotado ? "Tiempo agotado" : ""}

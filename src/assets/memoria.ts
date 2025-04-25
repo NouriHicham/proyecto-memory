@@ -7,8 +7,19 @@ export class Memoria {
   public clicks: number = 0;
   public matches: number = 0; // debe llegar a 8
   public win: boolean = false;
+
+  private imagenes: string[] = [
+    "/img/0.png",
+    "/img/1.png",
+    "/img/2.png",
+    "/img/3.png",
+    "/img/4.png",
+    "/img/5.png",
+    "/img/6.png",
+    "/img/7.png",
+  ]
   constructor() {
-    [0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7].forEach((item, key) => this.memoria.push(new Carta(item, key)));
+    [0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7].forEach((item, key) => this.memoria.push(new Carta(item, key, this.imagenes)));
   }
 
   public shuffle() {

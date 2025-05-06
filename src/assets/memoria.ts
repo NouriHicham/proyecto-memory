@@ -88,5 +88,12 @@ export class Memoria {
   public setTiempoAgotado(tiempoAgotado: boolean) {
     this.tiempoAgotado = tiempoAgotado;
   }
+
+  public actualizarImagenes(nuevasImagenes: string[]) {
+    this.imagenes = nuevasImagenes;
+    this.memoria.forEach((carta, index) => {
+      carta.imagenes = nuevasImagenes;
+    });
+  }
   
 }

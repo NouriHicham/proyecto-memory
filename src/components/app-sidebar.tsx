@@ -121,9 +121,6 @@ export function AppSidebar({ children }: { children?: React.ReactNode }) {
         setLoading(false);
         return;
       }
-      // Opcional: auto-login tras registro
-      setUser({ name: data.name, email: data.email });
-      setIsLoggedIn(true);
       setLoading(false);
     } catch (err) {
       setError("Error de red");

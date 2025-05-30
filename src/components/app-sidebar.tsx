@@ -6,7 +6,6 @@ import {
   LogOut,
   LogIn,
   UserPlus,
-  Menu,
   Home,
   Gamepad,
   Search,
@@ -48,6 +47,8 @@ export function AppSidebar({ children }: { children?: React.ReactNode }) {
   const [activeTab, setActiveTab] = useState("login");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showScores, setShowScores] = useState(false);
+  const [games, setGames] = useState<any[]>([]);
 
   // Guarda el token en localStorage
   const saveToken = (token: string) => {
@@ -148,6 +149,38 @@ export function AppSidebar({ children }: { children?: React.ReactNode }) {
     clearToken();
   };
 
+  const fetchGames = async () => {
+    const token = localStorage.getItem("auth_token");
+    if (!token) return;
+    try {
+      const res = await fetch(
+        "https://m7-nourihicham.up.railway.app/api/games",
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!res.ok) throw new Error("No se pudieron obtener las partidas");
+      const data = await res.json();
+      setGames(
+        Array.isArray(data)
+          ? data.slice(0, 10)
+          : (data.games || []).slice(0, 10)
+      );
+    } catch {
+      setGames([]);
+    }
+  };
+
+  const handleShowScores = async () => {
+    await fetchGames();
+    setShowScores(true);
+  };
+
+  const handleCloseScores = () => setShowScores(false);
+
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
     if (token) {
@@ -195,12 +228,54 @@ export function AppSidebar({ children }: { children?: React.ReactNode }) {
               </div>
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <SidebarMenuButton>
+                  <SidebarMenuButton onClick={handleShowScores}>
                     <Star className="mr-2 h-4 w-4" />
                     <span>Mis Puntuaciones</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>
+              {/* Modal de puntuaciones */}
+              {showScores && (
+                <div className="fixed inset-0 bg-transparent bg-opacity-20 backdrop-blur flex items-center justify-center z-50">
+                  <div className="bg-white rounded shadow-lg p-6 w-[350px] max-h-[80vh] overflow-auto relative">
+                    <button
+                      className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                      onClick={handleCloseScores}
+                    >
+                      ×
+                    </button>
+                    <h2 className="text-lg font-semibold mb-4">
+                      Últimas 10 partidas
+                    </h2>
+                    {games.length === 0 ? (
+                      <div className="text-gray-500">No hay partidas.</div>
+                    ) : (
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr>
+                            <th className="text-left">Clicks</th>
+                            <th className="text-left">Tiempo</th>
+                            <th className="text-left">Fecha</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {games.map((g, i) => (
+                            <tr key={g.id || i}>
+                              <td>{g.clicks ?? "-"}</td>
+                              <td>{g.tiempo ?? "-"}</td>
+                              <td>
+                                {g.created_at
+                                  ? new Date(g.created_at).toLocaleString()
+                                  : "-"}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <div className="p-4">

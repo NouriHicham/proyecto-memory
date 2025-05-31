@@ -38,6 +38,15 @@ type AuthUser = {
   role: string;
 };
 
+// Definir tipo para partidas
+interface Game {
+  id: number;
+  clicks: number;
+  duration: number;
+  points: number;
+  created_at?: string;
+}
+
 const menuItems = [
   { title: "Home", url: "/", icon: Home },
   { title: "Juego", url: "/juego", icon: Gamepad },
@@ -51,7 +60,7 @@ export function AppSidebar({ children }: { children?: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showScores, setShowScores] = useState(false);
-  const [games, setGames] = useState<any[]>([]);
+  const [games, setGames] = useState<Game[]>([]);
 
   // Guarda el token en localStorage
   const saveToken = (token: string) => {

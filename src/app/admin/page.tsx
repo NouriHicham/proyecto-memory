@@ -3,24 +3,41 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Pencil, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 
+// Tipos para usuario y partida
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+}
+
+interface Game {
+  id: number;
+  user?: User;
+  clicks: number;
+  duration: number;
+  points: number;
+  created_at?: string;
+}
+
 export default function AdminMainPage() {
   // Estado para partidas
-  const [partidas, setPartidas] = useState<any[]>([]);
+  const [partidas, setPartidas] = useState<Game[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Estado para el modal de edición
   const [editModal, setEditModal] = useState(false);
-  const [editData, setEditData] = useState<any | null>(null);
+  const [editData, setEditData] = useState<Game | null>(null);
   const [editLoading, setEditLoading] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
 
   // Estado para el modal de edición de cuentas
   const [editUserModal, setEditUserModal] = useState(false);
-  const [editUserData, setEditUserData] = useState<any | null>(null);
+  const [editUserData, setEditUserData] = useState<User | null>(null);
   const [editUserLoading, setEditUserLoading] = useState(false);
   const [editUserError, setEditUserError] = useState<string | null>(null);
-  const [cuentasData, setCuentasData] = useState<any[]>([]);
+  const [cuentasData, setCuentasData] = useState<User[]>([]);
   const [cuentasLoading, setCuentasLoading] = useState(false);
   const [cuentasError, setCuentasError] = useState<string | null>(null);
 
@@ -39,8 +56,12 @@ export default function AdminMainPage() {
       if (!res.ok) throw new Error("No se pudieron obtener las partidas");
       const data = await res.json();
       setPartidas(Array.isArray(data.data) ? data.data : []);
-    } catch (err: any) {
-      setError(err.message || "Error al cargar partidas");
+    } catch (err: unknown) {
+      if (err && typeof err === "object" && "message" in err) {
+        setError((err as { message?: string }).message || "Error al cargar partidas");
+      } else {
+        setError("Error al cargar partidas");
+      }
     }
     setLoading(false);
   };
@@ -60,8 +81,12 @@ export default function AdminMainPage() {
       if (!res.ok) throw new Error("No se pudieron obtener las cuentas");
       const data = await res.json();
       setCuentasData(Array.isArray(data.data) ? data.data : []);
-    } catch (err: any) {
-      setCuentasError(err.message || "Error al cargar cuentas");
+    } catch (err: unknown) {
+      if (err && typeof err === "object" && "message" in err) {
+        setCuentasError((err as { message?: string }).message || "Error al cargar cuentas");
+      } else {
+        setCuentasError("Error al cargar cuentas");
+      }
     }
     setCuentasLoading(false);
   };
@@ -80,23 +105,29 @@ export default function AdminMainPage() {
       });
       if (!res.ok) throw new Error("No se pudo eliminar la partida");
       setPartidas((prev) => prev.filter((p) => p.id !== id));
-    } catch (err: any) {
-      alert(err.message || "Error al eliminar");
+    } catch (err: unknown) {
+      if (err && typeof err === "object" && "message" in err) {
+        alert((err as { message?: string }).message || "Error al eliminar");
+      } else {
+        alert("Error al eliminar");
+      }
     }
   };
 
-  const handleUpdate = (partida: any) => {
+  const handleUpdate = (partida: Game) => {
     setEditData(partida);
     setEditError(null);
     setEditModal(true);
   };
 
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEditData({ ...editData, [e.target.name]: e.target.value });
+    if (!editData) return;
+    setEditData({ ...editData, [e.target.name]: e.target.value } as Game);
   };
 
   const handleEditSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!editData) return;
     setEditLoading(true);
     setEditError(null);
     const token = localStorage.getItem("auth_token");
@@ -116,24 +147,30 @@ export default function AdminMainPage() {
       if (!res.ok) throw new Error("No se pudo actualizar la partida");
       setEditModal(false);
       fetchPartidas();
-    } catch (err: any) {
-      setEditError(err.message || "Error al actualizar");
+    } catch (err: unknown) {
+      if (err && typeof err === "object" && "message" in err) {
+        setEditError((err as { message?: string }).message || "Error al actualizar");
+      } else {
+        setEditError("Error al actualizar");
+      }
     }
     setEditLoading(false);
   };
 
-  const handleUserUpdate = (cuenta: any) => {
+  const handleUserUpdate = (cuenta: User) => {
     setEditUserData(cuenta);
     setEditUserError(null);
     setEditUserModal(true);
   };
 
   const handleUserEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setEditUserData({ ...editUserData, [e.target.name]: e.target.value });
+    if (!editUserData) return;
+    setEditUserData({ ...editUserData, [e.target.name]: e.target.value } as User);
   };
 
   const handleUserEditSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!editUserData) return;
     setEditUserLoading(true);
     setEditUserError(null);
     const token = localStorage.getItem("auth_token");
@@ -154,8 +191,12 @@ export default function AdminMainPage() {
       // Actualizar la lista localmente (en producción, refrescar desde la API)
       setCuentasData((prev) => prev.map((c) => c.id === editUserData.id ? { ...c, ...editUserData } : c));
       setEditUserModal(false);
-    } catch (err: any) {
-      setEditUserError(err.message || "Error al actualizar");
+    } catch (err: unknown) {
+      if (err && typeof err === "object" && "message" in err) {
+        setEditUserError((err as { message?: string }).message || "Error al actualizar");
+      } else {
+        setEditUserError("Error al actualizar");
+      }
     }
     setEditUserLoading(false);
   };
@@ -174,8 +215,12 @@ export default function AdminMainPage() {
       });
       if (!res.ok) throw new Error("No se pudo eliminar el usuario");
       setCuentasData((prev) => prev.filter((u) => u.id !== id));
-    } catch (err: any) {
-      alert(err.message || "Error al eliminar usuario");
+    } catch (err: unknown) {
+      if (err && typeof err === "object" && "message" in err) {
+        alert((err as { message?: string }).message || "Error al eliminar usuario");
+      } else {
+        alert("Error al eliminar usuario");
+      }
     }
   };
 

@@ -228,7 +228,6 @@ export default function AdminMainPage() {
   useEffect(() => {
     fetchPartidas();
     fetchCuentas();
-    // eslint-disable-next-line
   }, []);
 
   return (

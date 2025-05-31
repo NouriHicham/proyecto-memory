@@ -99,7 +99,7 @@ export function AppSidebar({ children }: { children?: React.ReactNode }) {
       setUser({ name: data.data.name, email: data.data.email, role: data.data.role });
       setIsLoggedIn(true);
       setLoading(false);
-    } catch (err) {
+    } catch {
       setError("Error de red");
       setLoading(false);
     }
@@ -135,7 +135,7 @@ export function AppSidebar({ children }: { children?: React.ReactNode }) {
         return;
       }
       setLoading(false);
-    } catch (err) {
+    } catch {
       setError("Error de red");
       setLoading(false);
     }
@@ -153,7 +153,7 @@ export function AppSidebar({ children }: { children?: React.ReactNode }) {
           },
         });
       }
-    } catch (err) {
+    } catch {
       // Opcional: manejar error de logout
     }
     setUser(null);

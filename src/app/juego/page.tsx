@@ -63,6 +63,7 @@ export default function Juego() {
     setTiempoAgotado(false);
     setWin(false);
     setContador(40);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [started]);
 
   // Cuenta regresiva del juego

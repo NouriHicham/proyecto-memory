@@ -10,6 +10,8 @@ import {
   Gamepad,
   Search,
   Star,
+  X,
+  ShieldUser,
 } from "lucide-react";
 import {
   Sidebar,
@@ -33,6 +35,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 type AuthUser = {
   name: string;
   email: string;
+  role: string;
 };
 
 const menuItems = [
@@ -84,7 +87,7 @@ export function AppSidebar({ children }: { children?: React.ReactNode }) {
         return;
       }
       saveToken(data.token);
-      setUser({ name: data.name, email });
+      setUser({ name: data.data.name, email: data.data.email, role: data.data.role });
       setIsLoggedIn(true);
       setLoading(false);
     } catch (err) {
@@ -165,9 +168,9 @@ export function AppSidebar({ children }: { children?: React.ReactNode }) {
       if (!res.ok) throw new Error("No se pudieron obtener las partidas");
       const data = await res.json();
       setGames(
-        Array.isArray(data)
-          ? data.slice(0, 10)
-          : (data.games || []).slice(0, 10)
+        Array.isArray(data.data)
+          ? data.data.slice(0, 10)
+          : null
       );
     } catch {
       setGames([]);
@@ -194,7 +197,7 @@ export function AppSidebar({ children }: { children?: React.ReactNode }) {
         .then(async (res) => {
           if (!res.ok) throw new Error("No autorizado");
           const data = await res.json();
-          setUser({ name: data.name, email: data.email });
+          setUser({ name: data.data.name, email: data.data.email, role: data.data.role });
           setIsLoggedIn(true);
         })
         .catch(() => {
@@ -228,7 +231,7 @@ export function AppSidebar({ children }: { children?: React.ReactNode }) {
               </div>
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <SidebarMenuButton onClick={handleShowScores}>
+                  <SidebarMenuButton onClick={handleShowScores} className="cursor-pointer">
                     <Star className="mr-2 h-4 w-4" />
                     <span>Mis Puntuaciones</span>
                   </SidebarMenuButton>
@@ -239,10 +242,10 @@ export function AppSidebar({ children }: { children?: React.ReactNode }) {
                 <div className="fixed inset-0 bg-transparent bg-opacity-20 backdrop-blur flex items-center justify-center z-50">
                   <div className="bg-white rounded shadow-lg p-6 w-[350px] max-h-[80vh] overflow-auto relative">
                     <button
-                      className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                      className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 cursor-pointer"
                       onClick={handleCloseScores}
                     >
-                      ×
+                      <X className="h-5 w-5" />
                     </button>
                     <h2 className="text-lg font-semibold mb-4">
                       Últimas 10 partidas
@@ -255,6 +258,7 @@ export function AppSidebar({ children }: { children?: React.ReactNode }) {
                           <tr>
                             <th className="text-left">Clicks</th>
                             <th className="text-left">Tiempo</th>
+                            <th className="text-left">Puntos</th>
                             <th className="text-left">Fecha</th>
                           </tr>
                         </thead>
@@ -262,7 +266,8 @@ export function AppSidebar({ children }: { children?: React.ReactNode }) {
                           {games.map((g, i) => (
                             <tr key={g.id || i}>
                               <td>{g.clicks ?? "-"}</td>
-                              <td>{g.tiempo ?? "-"}</td>
+                              <td>{g.duration ? g.duration + " seg": "-"}</td>
+                              <td>{g.points ?? "-"}</td>
                               <td>
                                 {g.created_at
                                   ? new Date(g.created_at).toLocaleString()
@@ -371,6 +376,17 @@ export function AppSidebar({ children }: { children?: React.ReactNode }) {
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
+                {/* Mostrar solo si es admin */}
+                {user?.role === "admin" && (
+                  <SidebarMenuItem key="admin-partidas">
+                    <SidebarMenuButton asChild>
+                      <a href="/admin/partidas">
+                        <ShieldUser />
+                        <span>Admin Partidas</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
@@ -380,7 +396,7 @@ export function AppSidebar({ children }: { children?: React.ReactNode }) {
           {isLoggedIn ? (
             <Button
               variant="ghost"
-              className="w-full justify-start px-4 py-2 text-red-500 hover:text-red-600 hover:bg-red-50"
+              className="w-full justify-start px-4 py-2 text-red-500 hover:text-red-600 hover:bg-red-50 cursor-pointer"
               onClick={handleLogout}
             >
               <LogOut className="h-4 w-4 mr-2" />

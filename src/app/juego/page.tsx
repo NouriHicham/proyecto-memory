@@ -26,6 +26,7 @@ export default function Juego() {
 
   // Detectar sesión y crear juego si corresponde
   useEffect(() => {
+    if (!started) return;
     const t = localStorage.getItem("auth_token");
     setToken(t);
     if (t) {
@@ -40,12 +41,12 @@ export default function Juego() {
         .then(async (res) => {
           if (!res.ok) throw new Error("No se pudo crear el juego");
           const data = await res.json();
-          setGameId(data.id?.toString() || data.game?.id?.toString() || null);
+          setGameId(data.data.id?.toString() || null);
         })
         .catch(() => setGameId(null));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [started]);
 
   // Solo inicializa el tablero cuando el juego comienza
   useEffect(() => {
@@ -65,7 +66,7 @@ export default function Juego() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [started]);
 
-  // Solo corre el intervalo si el juego comenzó
+  // Cuenta regresiva del juego
   useEffect(() => {
     if (!started) return;
     const intervalId = setInterval(() => {
@@ -93,8 +94,9 @@ export default function Juego() {
                 Authorization: `Bearer ${token}`,
               },
               body: JSON.stringify({
-                clicks,
-                tiempo: 40 - contador,
+                clicks: clicks,
+                duration: 40 - contador,
+                points: 1000 - clicks - (40 - contador) - (8 - memoria.getMatches()),
                 // puedes agregar más datos si la API lo requiere
               }),
             }

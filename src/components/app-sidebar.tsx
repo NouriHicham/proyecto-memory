@@ -380,9 +380,9 @@ export function AppSidebar({ children }: { children?: React.ReactNode }) {
                 {user?.role === "admin" && (
                   <SidebarMenuItem key="admin-partidas">
                     <SidebarMenuButton asChild>
-                      <a href="/admin/partidas">
+                      <a href="/admin">
                         <ShieldUser />
-                        <span>Admin Partidas</span>
+                        <span>Admin</span>
                       </a>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
